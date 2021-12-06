@@ -1,3 +1,4 @@
+#TODO Add luck mechanic to fight
 class Fighter
   attr_reader :name
   attr_accessor :defense
@@ -12,20 +13,32 @@ class Fighter
     @luck = luck
     @life = life
   end
+  
+  def lucky_roll? 
+    roll = rand(@luck...10)
+    roll == 9
+  end
 
   def attack opp
     damage = @strength - opp.defense
     if damage <= 0
       puts "#{name} was blocked by #{opp.name} and did 0 damage"
     else
+      if self.lucky_roll?
+        puts "Your luck paid off with a critical hit"
+      damage *= 2
+      end
+
       opp.life -= damage
       if opp.life < 0
         opp.life = 0
       end
       puts "#{name} did #{damage} damage to #{opp.name}. #{opp.name} has #{opp.life} life points left"
+      
     end
 
   end
+
 end
 
 
@@ -36,30 +49,51 @@ end
 # ryu.attack(ken)
 # puts ken.life
 
+
 class Dojo
 
   def self.lift_weights fighter
     fighter.strength += 1
-    puts "#{fighter.name} is getting stronger"
-    puts "#{fighter.name}'s strength increased to #{fighter.strength}"
+    puts "You are getting stronger"
+    if fighter.lucky_roll?
+      fighter.strength +=1  
+      puts "Your luck paid off with an addition point in strength"
+    end
+    puts "Your strength increased to #{fighter.strength}"
+    
+    
   end
   
   def self.endurance_training(fighter)
     fighter.defense += 1
-    puts "#{fighter.name} feels their defense getting stouter"
-    puts "#{fighter.name}'s defense increased to #{fighter.defense}"
+    puts "You feel your defense getting stouter"
+    if fighter.lucky_roll?
+      fighter.defense +=1  
+      puts "Your luck paid off with an addition point in defense"
+    end
+    puts "Your defense increased to #{fighter.defense}"
+    
   end
   
   def self.coin_in_fountain(fighter)
     fighter.luck += 1
-    puts "#{fighter.name} flipped a coin into the fountain. As they turned to leave they stumbled upon a lucky rabbit's foot and added it to inventory"
-    puts "#{fighter.name}'s luck increased to #{fighter.luck}"
+    puts "You flip a coin into the fountain. As you turn to leave you stumble upon a lucky rabbit's foot and add it to inventory"
+    if fighter.lucky_roll?
+      fighter.luck +=1  
+      puts "Your luck paid off with an addition point in luck"
+    end
+    
+    puts "Your luck increased to #{fighter.luck}"
   end
   
   def self.rest_up(fighter)
     fighter.life += 2
-    puts "#{fighter.name} did not do anything productive this week. Their body feels invigorated by the extra rest"
-    puts "#{fighter.name}'s life points increased to #{fighter.life}"
+    puts "You did not do anything productive this week. Your body feels invigorated by the extra rest"
+    if fighter.lucky_roll?
+      fighter.life +=2  
+      puts "Your luck paid off with 2 additional points in life"
+    end
+    puts "Your life points increased to #{fighter.life}"
   end
 end
 
@@ -82,7 +116,23 @@ def game
   create_opponent
   p player
 end
-  
+#----------------------
+# GAME
+#----------------------
+puts " ______      ___       _____   ___    "
+puts "|_   _ `.  .'   `.    |_   _|.'   `.  "
+puts "  | | `. \\/  .-.  \\     | | /  .-.  \\ "
+puts "  | |  | || |   | | _   | | | |   | | "
+puts " _| |_.' /\\  `-'  /| |__' | \\  `-'  / "
+puts "|______.'  `.___.' `.____.'  `.___.'  "
+
+puts " ________  _____   ______  ____  ____  _________  ________  _______    "
+puts "|_   __  ||_   _|.' ___  ||_   ||   _||  _   _  ||_   __  ||_   __ \\   "
+puts "  | |_ \\_|  | | / .'   \\_|  | |__| |  |_/ | | \\_|  | |_ \\_|  | |__) |  "
+puts "  |  _|     | | | |   ____  |  __  |      | |      |  _| _   |  __ /   "
+puts " _| |_     _| |_\\ `.___]  |_| |  | |_    _| |_    _| |__/ | _| |  \\ \\_ "
+puts "|_____|   |_____|`._____.'|____||____|  |_____|  |________||____| |___|"
+
 puts "Welcome to Dojo Fighter, new recruit. What is your name?"
 name = gets.strip
 player = Fighter.new(name, 0, 0, 0, 10)
@@ -127,6 +177,12 @@ when "n", "no"
 else
   puts "What's that kid? I couldn't understand you. Anyway, let's start the match!"
 end
+puts "________  _____   ______  ____  ____  _________  "
+puts "|_   __  ||_   _|.' ___  ||_   ||   _||  _   _  | "
+puts "  | |_ \\_|  | | / .'   \\_|  | |__| |  |_/ | | \\_| "
+puts "  |  _|     | | | |   ____  |  __  |      | |     "
+puts " _| |_     _| |_\\ `.___]  |_| |  | |_    _| |_    "
+puts "|_____|   |_____|`._____.'|____||____|  |_____|   "
 
 loop do
   player.attack(opponent)
