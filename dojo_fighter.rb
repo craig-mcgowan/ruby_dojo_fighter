@@ -25,6 +25,7 @@ class Fighter
       puts "#{name} was blocked by #{opp.name} and did 0 damage"
     else
       if self.lucky_roll?
+        puts "\n-------Lucky Roll-------\n"
         puts "Your luck paid off with a critical hit"
       damage *= 2
       end
@@ -51,13 +52,14 @@ end
 
 
 class Dojo
-
+  
   def self.lift_weights fighter
     fighter.strength += 1
     puts "You are getting stronger"
     if fighter.lucky_roll?
+      puts "\n-------Lucky Roll-------\n"
       fighter.strength +=1  
-      puts "Your luck paid off with an addition point in strength"
+      puts "Your luck paid off with an additional point in strength"
     end
     puts "Your strength increased to #{fighter.strength}"
     
@@ -68,28 +70,36 @@ class Dojo
     fighter.defense += 1
     puts "You feel your defense getting stouter"
     if fighter.lucky_roll?
+      puts "\n-------Lucky Roll-------\n"
       fighter.defense +=1  
-      puts "Your luck paid off with an addition point in defense"
+      puts "Your luck paid off with an additional point in defense"
     end
     puts "Your defense increased to #{fighter.defense}"
     
   end
   
   def self.coin_in_fountain(fighter)
-    fighter.luck += 1
-    puts "You flip a coin into the fountain. As you turn to leave you stumble upon a lucky rabbit's foot and add it to inventory"
-    if fighter.lucky_roll?
-      fighter.luck +=1  
-      puts "Your luck paid off with an addition point in luck"
+    if fighter.luck >= 8
+      puts "You cannot fit more than 8 rabbit's feet in your inventory, your luck is maxed out!"
+      fighter.life +=2
+      puts "As a consolation, the cosmos has given you a couple additional points in life "
+    else 
+      fighter.luck += 1
+      puts "You flip a coin into the fountain. As you turn to leave you stumble upon a lucky rabbit's foot and add it to inventory"
+      if fighter.lucky_roll? && fighter.luck < 7
+        puts "\n-------Lucky Roll-------\n"  
+        fighter.luck +=1  
+        puts "Your luck paid off with an additional point in luck"
+      end
+      puts "Your luck increased to #{fighter.luck}"
     end
-    
-    puts "Your luck increased to #{fighter.luck}"
   end
   
   def self.rest_up(fighter)
     fighter.life += 2
     puts "You did not do anything productive this week. Your body feels invigorated by the extra rest"
     if fighter.lucky_roll?
+      puts "\n-------Lucky Roll-------\n"
       fighter.life +=2  
       puts "Your luck paid off with 2 additional points in life"
     end
@@ -133,7 +143,7 @@ puts "  |  _|     | | | |   ____  |  __  |      | |      |  _| _   |  __ /   "
 puts " _| |_     _| |_\\ `.___]  |_| |  | |_    _| |_    _| |__/ | _| |  \\ \\_ "
 puts "|_____|   |_____|`._____.'|____||____|  |_____|  |________||____| |___|"
 
-puts "Welcome to Dojo Fighter, new recruit. What is your name?"
+puts "\nWelcome to Dojo Fighter, new recruit. What is your name?"
 name = gets.strip
 player = Fighter.new(name, 0, 0, 0, 10)
 puts "#{player.name}, eh? Okay, I'll get you signed in."
@@ -143,25 +153,96 @@ puts "..."
 puts "..."
 
 roster = ["Shredder", "Krang", "Leatherhead", "Baxter Shockman", "Slash"]
+conflicts = ["dentist appointment", "family reunion", "ribbon cutting ceremony", "big gala", "bowling match"]
 
 opponent_name = roster.sample()
-opponent = Fighter.new(opponent_name,4,4,4,10)
-# p opponent
-puts "Your opponent for the upcoming match is #{opponent.name}! Better start training, this will be a tough one!"
+def opponent_art name
+  case name
+  when "Shredder"
+    puts " _____ _   _ ______ _________________ ___________ "
+    puts "/  ___| | | || ___ \\  ___|  _  \\  _  \\  ___| ___ \\"
+    puts "\\ `--.| |_| || |_/ / |__ | | | | | | | |__ | |_/ /"
+    puts " `--. \\  _  ||    /|  __|| | | | | | |  __||    / "
+    puts "/\\__/ / | | || |\\ \\| |___| |/ /| |/ /| |___| |\\ \\ "
+    puts "\\____/\\_| |_/\\_| \\_\\____/|___/ |___/ \\____/\\_| \\_|"
+  when "Krang"
+    puts " _   ________  ___   _   _ _____ "
+    puts "| | / /| ___ \\/ _ \\ | \\ | |  __ \\"
+    puts "| |/ / | |_/ / /_\\ \\|  \\| | |  \\/"
+    puts "|    \\ |    /|  _  || . ` | | __ "
+    puts "| |\\  \\| |\\ \\| | | || |\\  | |_\\ \\"
+    puts "\\_| \\_/\\_| \\_\\_| |_/\\_| \\_/\\____/"
+  when "Leatherhead"
+    puts " _      _____  ___ _____ _   _  ___________ "
+    puts "| |    |  ___|/ _ \\_   _| | | ||  ___| ___ \\"
+    puts "| |    | |__ / /_\\ \\| | | |_| || |__ | |_/ /"
+    puts "| |    |  __||  _  || | |  _  ||  __||    / "
+    puts "| |____| |___| | | || | | | | || |___| |\\ \\ "
+    puts "\\_____/\\____/\\_| |_/\\_/ \\_| |_/\\____/\\_| \\_|"
+    puts " _   _  _____  ___ ______ "
+    puts "| | | ||  ___|/ _ \\|  _  \\"
+    puts "| |_| || |__ / /_\\ \\ | | |"
+    puts "|  _  ||  __||  _  | | | |"
+    puts "| | | || |___| | | | |/ / "
+    puts "\\_| |_/\\____/\\_| |_/___/  "
+  when "Baxter Shockman"
+    puts "______  ___  __   _______ ___________ "
+    puts "| ___ \\/ _ \\ \\ \\ / /_   _|  ___| ___ \\"
+    puts "| |_/ / /_\\ \\ \\ V /  | | | |__ | |_/ /"
+    puts "| ___ \\  _  | /   \\  | | |  __||    / "
+    puts "| |_/ / | | |/ /^\\ \\ | | | |___| |\\ \\ "
+    puts "\\____/\\_| |_/\\/   \\/ \\_/ \\____/\\_| \\_|"
+    puts " _____ _   _ _____ _____  _   _____  ___  ___   _   _ "
+    puts "/  ___| | | |  _  /  __ \\| | / /|  \\/  | / _ \\ | \\ | |"
+    puts "\\ `--.| |_| | | | | /  \\/| |/ / | .  . |/ /_\\ \\|  \\| |"
+    puts " `--. \\  _  | | | | |    |    \\ | |\\/| ||  _  || . ` |"
+    puts "/\\__/ / | | \\ \\_/ / \\__/\\| |\\  \\| |  | || | | || |\\  |"
+    puts "\\____/\\_| |_/\\___/ \\____/\\_| \\_/\\_|  |_/\\_| |_/\\_| \\_/"
+  when "Slash"  
+    puts " _____ _       ___   _____ _   _ "
+    puts "/  ___| |     / _ \\ /  ___| | | |"
+    puts "\\ `--.| |    / /_\\ \\\\ `--.| |_| |"
+    puts " `--. \\ |    |  _  | `--. \\  _  |"
+    puts "/\\__/ / |____| | | |/\\__/ / | | |"
+    puts "\\____/\\_____/\\_| |_/\\____/\\_| |_/"
+  end
+end
+opponent = Fighter.new(opponent_name,rand(7),rand(7),rand(5), 10)
+puts "Your opponent for the upcoming match is:"
+opponent_art opponent_name
+puts "\nBetter start training, this will be a tough one!"
 x = 1
-while x < 11
-  puts "Training week #{x}... How would you like to train. Please select weights, endurance, or visit the fountain"
+y = 11
+while x < y
+  puts "\n-----Training week #{x}-----"
+  puts "How would you like to train? Please select lifting weights, endurance exercises, or visit the fountain"
   choice = gets.downcase
 
-  if choice.include? "fountain"
+  if choice.include? "fountain" 
     Dojo.coin_in_fountain(player)
-  elsif choice.include? "weights"
+  elsif choice.include? "weights" 
     Dojo.lift_weights(player)
-  elsif choice.include? "endurance"
+  elsif choice.include? "endurance" 
     Dojo.endurance_training(player)
   else 
     Dojo.rest_up(player)
   end
+  
+  if player.lucky_roll?
+    puts "\n-------Lucky Roll-------\n"
+    puts "It's your lucky day kid, #{opponent.name} has a #{conflicts.sample} the day of the fight"
+    puts "Would you like an extra week to continue your training? (y/n)"
+    extra_week = gets.strip
+    extra_week.downcase!
+    if extra_week == "y"
+      y += 1
+      puts "Great, use your extra time wisely!"
+    else
+      puts "Wow you must be feeling confident. I'll tell #{opponent.name} he'll have to cancel his conflict"
+    end    
+  end
+
+
   x += 1 
 
 end
@@ -198,7 +279,12 @@ loop do
     puts "Both fighters lack the strength to damage their opponent. The match ends in a tie. This was a very boring match."
     break
   end
-  puts "###############NEXT ROUND################"
+  
+  puts "Press enter to begin the Next Round"
+  gets
+
+  puts "\n\n-------------NEXT ROUND-------------\n\n"
+
 end
 
 
